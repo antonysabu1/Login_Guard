@@ -1,0 +1,14 @@
+# Secrets
+.env
+
+# Virtual Environment
+venv/
+env/
+
+# Python Cache
+__pycache__/
+*.pyc
+
+# Logs
+*.log
+dummy_auth.log

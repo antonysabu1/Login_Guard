@@ -1,0 +1,14 @@
+[Unit]
+Description=Login Guard - Unauthorized Login Monitor
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/login_guard
+ExecStart=/opt/login_guard/venv/bin/python /opt/login_guard/login_guard.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
