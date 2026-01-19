@@ -1,6 +1,6 @@
 # Login Guard 🛡️
 
-Login Guard is a lightweight Python-based security tool for Linux systems. It monitors authentication logs (`/var/log/auth.log`) in real-time and sends instant Telegram alerts when unauthorized login attempts are detected.
+Login Guard is a lightweight Python-based security tool for Linux systems. It monitors authentication logs (`/var/log/auth.log`) in real-time and sends instant Telegram alerts nad gmail alerts when unauthorized login attempts are detected.
 
 ## ✨ Features
 
