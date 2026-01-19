@@ -5,6 +5,9 @@ import requests
 import socket
 import subprocess
 import shutil
+import smtplib
+import ssl
+from email.message import EmailMessage
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -12,6 +15,9 @@ load_dotenv()
 
 BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+GMAIL_USER = os.getenv("GMAIL_USER")
+GMAIL_PASS = os.getenv("GMAIL_APP_PASSWORD")
+GMAIL_RECIPIENT = os.getenv("ALERT_RECIPIENT_EMAIL")
 LOG_FILE = os.getenv("LOG_FILE_PATH", "/var/log/auth.log")
 HOSTNAME = socket.gethostname()
 
@@ -33,6 +39,25 @@ failed_attempts = {}
 
 # GeoIP Cache: {ip: {"country": "US", "city": "NY", ...}}
 geoip_cache = {}
+
+def send_email_alert(subject, message):
+    """Sends an email alert using Gmail SMTP."""
+    if not GMAIL_USER or not GMAIL_PASS or not GMAIL_RECIPIENT:
+        return
+
+    msg = EmailMessage()
+    msg.set_content(message)
+    msg["Subject"] = subject
+    msg["From"] = GMAIL_USER
+    msg["To"] = GMAIL_RECIPIENT
+
+    context = ssl.create_default_context()
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+            server.login(GMAIL_USER, GMAIL_PASS)
+            server.send_message(msg)
+    except Exception as e:
+        print(f"Error sending email alert: {e}")
 
 def get_ip_details(ip):
     """Fetches location details for an IP address."""
@@ -236,7 +261,13 @@ def monitor_log():
             
             print(f"Alert triggered: {user} from {ip} (Count: {count}) {blocked_status.strip()}")
             print(f"  > {loc_str}")
+            
+            # Send Dual Alerts
             send_telegram_alert(alert_msg)
+            
+            # Use a cleaner subject for email
+            email_subject = header.replace("*", "").replace("🚨", "").replace("⚠️", "").strip()
+            send_email_alert(f"Login Guard: {email_subject}", alert_msg.replace("*", ""))
 
 if __name__ == "__main__":
     monitor_log()
