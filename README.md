@@ -64,14 +64,29 @@ sudo nano /opt/login_guard/.env
 sudo systemctl enable --now login_guard
 ```
 
-## 🔒 Security Best Practices
+## 🔒 Security & Best Practices
 
-- **File Permissions**: Ensure your `.env` file is only readable by the root user:
-  ```bash
-  sudo chmod 600 /opt/login_guard/.env
-  ```
-- **App Passwords**: Never use your primary Gmail password. Always generate a [Google App Password](https://myaccount.google.com/apppasswords).
-- **Active Defense**: Use `ENABLE_ACTIVE_DEFENSE` carefully to avoid locking yourself out if you forget your own password!
+To keep your system secure while using Login Guard:
+
+1. **Secure your `.env` file**: Ensure that your credentials are not readable by other users:
+   ```bash
+   sudo chmod 600 /opt/login_guard/.env
+   ```
+2. **Use a Dedicated Account**: For maximum safety, use a dedicated Gmail account specifically for these alerts rather than your primary personal email.
+3. **App Passwords Only**: Never store your real Gmail password. Use a [Google App Password](https://myaccount.google.com/apppasswords).
+4. **No Sensitive Data**: The alert messages only contain IP addresses and hostnames. Never modify the script to include passwords or sensitive user data in the alerts.
+
+## 📱 Setting up SMS (No 3rd Party APIs)
+
+Login Guard uses the **Email-to-SMS Gateway** method. This is safer than free SMS websites and requires no paid subscriptions.
+
+1. **Find your carrier's gateway**:
+   - **Verizon**: `number@vtext.com`
+   - **AT&T**: `number@txt.att.net`
+   - **T-Mobile**: `number@tmomail.net`
+2. **Update your `.env`**: Set `ALERT_RECIPIENT_EMAIL` to your phone's gateway address.
+
+---
 
 ## 🤝 Contributing
 
@@ -84,5 +99,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 5. Open a Pull Request
 
 ## 📄 License
-
 Distributed under the MIT License. See `LICENSE` for more information.

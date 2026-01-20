@@ -59,6 +59,17 @@ def send_email_alert(subject, message):
     except Exception as e:
         print(f"Error sending email alert: {e}")
 
+def send_sms_alert(message):
+    """Sends an SMS alert using the Email-to-SMS Gateway method."""
+    # This uses the same SMTP logic as email, but targets the mobile gateway
+    # Re-using send_email_alert logic but specifically for the gateway address.
+    # ALERT_RECIPIENT_EMAIL should be set to your phone's gateway (e.g. 1234567890@vtext.com)
+    if not GMAIL_USER or not GMAIL_PASS or not GMAIL_RECIPIENT:
+        return
+        
+    subject = "Login Guard SMS"
+    send_email_alert(subject, message)
+
 def get_ip_details(ip):
     """Fetches location details for an IP address."""
     # Check cache first
@@ -262,12 +273,17 @@ def monitor_log():
             print(f"Alert triggered: {user} from {ip} (Count: {count}) {blocked_status.strip()}")
             print(f"  > {loc_str}")
             
-            # Send Dual Alerts
+            # Send Multi-Channel Alerts
             send_telegram_alert(alert_msg)
             
             # Use a cleaner subject for email
             email_subject = header.replace("*", "").replace("🚨", "").replace("⚠️", "").strip()
-            send_email_alert(f"Login Guard: {email_subject}", alert_msg.replace("*", ""))
+            clean_msg = alert_msg.replace("*", "")
+            
+            send_email_alert(f"Login Guard: {email_subject}", clean_msg)
+            
+            # Send SMS Alert (Gateway method)
+            send_sms_alert(clean_msg)
 
 if __name__ == "__main__":
     monitor_log()
